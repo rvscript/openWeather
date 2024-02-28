@@ -12,6 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,5 +52,16 @@ class MainViewModel @Inject constructor(
     fun getFromSharedPreferences(context: Context, key: String, defaultValue: String): String {
         val sharedPreferences = context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE)
         return sharedPreferences.getString(key, defaultValue) ?: defaultValue
+    }
+
+    fun kelvinToFahrenheit(kelvin: Double): Double {
+        return (kelvin - 273.15) * 9 / 5 + 32
+    }
+
+    fun convertUnixTimeToHoursMinutes(unixTime: Long): String {
+        val date = Date(unixTime * 1000L)
+        val sdf = SimpleDateFormat("HH:mm")
+        sdf.timeZone = TimeZone.getDefault()
+        return sdf.format(date)
     }
 }

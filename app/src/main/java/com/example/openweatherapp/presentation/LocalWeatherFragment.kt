@@ -1,6 +1,5 @@
 package com.example.openweatherapp.presentation
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -33,7 +32,24 @@ class LocalWeatherFragment : Fragment() {
             weatherData.observe(requireActivity()) { item ->
                 if (item != null && this@LocalWeatherFragment.isAdded) {
                     binding.cityLabel.text = str
+                    val fahTemp = viewModel.kelvinToFahrenheit(item.main.temp)
+                    val fahFormatted = String.format("%.1f", fahTemp)
+                    val tvTempStr = "$fahFormatted F"?: ""
+                    binding.tvTemp.text = tvTempStr
+                    binding.tvDescription.text = item.weather[0].description
+                    val tvHumidityStr = "Humidity ${item.main.humidity}%"
+                    binding.tvHumidity.text = tvHumidityStr
+                    val windDesc = "Wind ${item.wind.deg} deg, ${item.wind.speed} MPH"
+                    binding.tvWind.text = windDesc
                     addToSharedPreferences(requireContext(), PREF_CITY_KEY, str)
+                    val unixTimeRise = item.sys.sunrise
+                    val sunrise = viewModel.convertUnixTimeToHoursMinutes(unixTimeRise.toLong())
+                    val sunRiseStr = "SunRise $sunrise"
+                    binding.tvSunrise.text = sunRiseStr
+                    val unixTimeSet = item.sys.sunset
+                    val sunset = viewModel.convertUnixTimeToHoursMinutes(unixTimeSet.toLong())
+                    val sunSetStr = "Sunset $sunset"
+                    binding.tvSunset.text = sunSetStr
                 }
             }
         }
