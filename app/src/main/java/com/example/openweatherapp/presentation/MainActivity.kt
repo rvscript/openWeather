@@ -57,6 +57,51 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
+                return
+            }
+
+            getCurrentLocation()
+        } else {
+            Toast.makeText(this@MainActivity.applicationContext, "Check location Service", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getCityFromLocation(location: Location) {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+        if (addresses != null) {
+            if (addresses.isNotEmpty()) {
+                val cityName = addresses[0].locality
+                Log.d("CITY", "City: $cityName")
+                currentLocation = cityName
+            } else {
+                Toast.makeText(this@MainActivity.applicationContext, "No Addresses Found", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -102,50 +147,5 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e("ERROR:", "Error getting location: ${exception.message}", exception)
             }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_REQUEST_CODE
-                )
-                return
-            }
-
-            getCurrentLocation()
-        } else {
-            Toast.makeText(this@MainActivity.applicationContext, "Check location Service", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun getCityFromLocation(location: Location) {
-        val geocoder = Geocoder(this, Locale.getDefault())
-        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-        if (addresses != null) {
-            if (addresses.isNotEmpty()) {
-                val cityName = addresses[0].locality
-                Log.d("CITY", "City: $cityName")
-                currentLocation = cityName
-            } else {
-                Toast.makeText(this@MainActivity.applicationContext, "No Addresses Found", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }

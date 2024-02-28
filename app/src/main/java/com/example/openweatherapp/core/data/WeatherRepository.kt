@@ -43,6 +43,8 @@ class WeatherRepositoryImpl @Inject constructor(private val apiService: OpenWeat
         }
     }
 
+
+    // create a separate repository to handle installed files
     private fun parseJsonToList(jsonString: String): MutableList<String> {
         val jsonArray = JSONArray(jsonString)
         val cityList: MutableList<String> = mutableListOf()

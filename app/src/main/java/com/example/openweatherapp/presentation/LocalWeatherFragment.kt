@@ -29,6 +29,7 @@ class LocalWeatherFragment : Fragment() {
         }
         viewModel.apply {
             getWeather(str)
+            // create methods to bind values instead of all in observer
             weatherData.observe(requireActivity()) { item ->
                 if (item != null && this@LocalWeatherFragment.isAdded) {
                     binding.cityLabel.text = str

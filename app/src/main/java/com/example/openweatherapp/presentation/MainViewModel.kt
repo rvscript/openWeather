@@ -42,6 +42,7 @@ class MainViewModel @Inject constructor(
         _cityList.postValue(useCase.getListOfCities(context))
     }
 
+    // create a utilities usecase to access multiple used methods
     fun addToSharedPreferences(context: Context, key: String, value: String) {
         val sharedPreferences = context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
